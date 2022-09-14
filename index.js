@@ -1,4 +1,6 @@
 import express from "express"
+import { authMiddleware } from "./middlewares/authMiddleware.js"
+import { logMiddleware } from "./middlewares/logMiddleware.js"
 
 const PORT = 2000
 const app = express()
@@ -22,9 +24,10 @@ const productData = [
 ]
 
 app.use(express.json())
+app.use(logMiddleware)
 
 app.get("/", (req, res) => {
-  res.send("Welcome to my API")
+  res.send("<h1>Welcome to my API</h1>")
 })
 
 app.get("/products", (req, res) => {
@@ -39,21 +42,30 @@ app.get("/products", (req, res) => {
       }
     })
 
-    return res.send(filtered)
+    return res.status(200).json({
+      message: "Get all products",
+      data: filtered,
+    })
   }
 
-  return res.send(productData)
+  return res.status(200).json({
+    message: "Get all products",
+    data: productData,
+  })
 })
 
-app.post("/products", (req, res) => {
+app.post("/products", authMiddleware, (req, res) => {
   let newProduct = {
     ...req.body,
-    id: productData[productData.length - 1].id + 1
+    id: productData[productData.length - 1].id + 1,
   }
 
   productData.push(newProduct)
 
-  res.send("Product added!")
+  return res.status(200).json({
+    message: "Product added!",
+    data: productData[productData.length - 1],
+  })
 })
 
 app.get("/products/:id", (req, res) => {
@@ -61,35 +73,34 @@ app.get("/products/:id", (req, res) => {
 
   for (let product of productData) {
     if (product.id == req.params.id) {
-      return res.send(product)
+      return res.status(200).json({
+        message: "Get product by ID",
+        data: product,
+      })
     }
   }
 
-  return res.status(404).send("Product not found")
+  return res.status(404).json({
+    message: "Product not found",
+  })
 })
 
-app.delete("/products/:id", (req, res) => {
+app.delete("/products/:id", authMiddleware, (req, res) => {
   const { id } = req.params
 
   for (let i = 0; i < productData.length; i++) {
     if (productData[i].id == id) {
       productData.splice(i, 1)
-      return res.send("Product deleted")
+      return res.status(200).json({
+        message: "Product deleted"
+      })
     }
   }
 
-  return res.send("Product not found")
+  return res.status(404).json({
+    message: "Product not found",
+  })
 })
-
-// Buat endpoint
-// 1. POST /products => Tambahin product beserta dengan id yang 
-//                      generate secara otomatis
-// let newProduct = { ...req.body, id: productData[terakhir].id + 1 }
-// 2. GET /products/:id => Get product berdasarkan ID, kirim 1 obj saja
-//                         sebagai response
-// 3. DELETE /products/:id => Hapus product berdasarkan ID
-// 4. GET /products => Bikin supaya bisa terima query params "product_name"
-//                     dan filter data berdasarkan "product_name"
 
 app.listen(PORT, () => {
   console.log("API listening in port", PORT)
