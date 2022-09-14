@@ -1,9 +1,11 @@
 import express from "express"
-import productsController from "./controllers/productsController.js"
-import { authMiddleware } from "./middlewares/authMiddleware.js"
 import { logMiddleware } from "./middlewares/logMiddleware.js"
+import { productsRoute } from "./routes/index.js"
+import dotenv from "dotenv"
 
-const PORT = 2000
+dotenv.config()
+
+const PORT = process.env.PORT
 const app = express()
 
 app.use(express.json())
@@ -13,10 +15,7 @@ app.get("/", (req, res) => {
   res.send("<h1>Welcome to my API</h1>")
 })
 
-app.get("/products", productsController.getAllProducts)
-app.post("/products", authMiddleware, productsController.createNewProduct)
-app.get("/products/:id", productsController.getProductById)
-app.delete("/products/:id", authMiddleware, productsController.deleteProductById)
+app.use("/products", productsRoute)
 
 app.listen(PORT, () => {
   console.log("API listening in port", PORT)
