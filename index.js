@@ -17,6 +17,13 @@ app.get("/", (req, res) => {
 
 app.use("/products", productsRoute)
 
+// name, email, password
+// 1. get all employees
+// 2. create employee
+// 3. delete employee
+// 4. edit employee
+
+
 app.listen(PORT, () => {
   console.log("API listening in port", PORT)
 })

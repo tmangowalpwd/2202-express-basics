@@ -85,6 +85,27 @@ const productsController = {
       message: "Product not found",
     })
   },
+  editProductById: (req, res) => {
+    const { id } = req.params
+
+    for (let i = 0; i < productData.length; i++) {
+      if (productData[i].id == id) {
+        productData[i] = {
+          ...productData[i],
+          ...req.body,
+        }
+
+        return res.status(200).json({
+          message: "Product edited",
+          data: productData[i],
+        })
+      }
+    }
+
+    return res.status(404).json({
+      message: "Product not found",
+    })
+  },
 }
 
 export default productsController
