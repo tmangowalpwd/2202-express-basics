@@ -2,6 +2,7 @@ import express from "express"
 import { logMiddleware } from "./middlewares/logMiddleware.js"
 import { productsRoute } from "./routes/index.js"
 import dotenv from "dotenv"
+import db from "./db/index.js"
 
 dotenv.config()
 
@@ -17,14 +18,13 @@ app.get("/", (req, res) => {
 
 app.use("/products", productsRoute)
 
-// name, email, password
-// 1. get all employees
-// 2. create employee
-// 3. delete employee
-// 4. edit employee
-
-
 app.listen(PORT, () => {
+  db.connect((err) => {
+    if (err) console.log(err)
+
+    console.log("MYSQL connected")
+  })
+
   console.log("API listening in port", PORT)
 })
 

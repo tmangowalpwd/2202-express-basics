@@ -5,9 +5,9 @@ import { authMiddleware } from "../middlewares/authMiddleware.js"
 const router = express.Router()
 
 router.get("/", productsController.getAllProducts)
-router.post("/", authMiddleware, productsController.createNewProduct)
+router.post("/", productsController.createNewProduct)
 router.get("/:id", productsController.getProductById)
-router.delete("/:id", authMiddleware, productsController.deleteProductById)
+router.delete("/:id", productsController.deleteProductById)
 router.patch("/:id", productsController.editProductById)
 
 export default router
